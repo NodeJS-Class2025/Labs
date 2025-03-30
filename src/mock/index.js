@@ -20,15 +20,15 @@ const usersCount = 10;
 const topicsCount = 20;
 const postsCount = 100;
 
-export function getUserIndex() {
+function getUserIndex() {
   return userIndex++;
 }
 
-export function getTopicIndex() {
+function getTopicIndex() {
   return topicIndex++;
 }
 
-export function getPostIndex() {
+function getPostIndex() {
   return postIndex++;
 }
 
@@ -51,7 +51,7 @@ function createRandomUser() {
     email: faker.internet.email().toLowerCase(),
     password: getHashedPassword(password),
     rawPassword: password, // To access fake data. Will be removed in the future
-    birthDate: faker.date.birthdate(),
+    birthDate: faker.date.birthdate().toISOString().split('T')[0],
     createdAt: dateTime,
     updatedAt: dateTime,
   };
