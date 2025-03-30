@@ -6,8 +6,8 @@ import formatMessage from './format.js';
 import getErrorInfo from './getErrorInfo.js';
 import { ENV_LOCAL } from '../../constants/env.js';
 
-const __dirname = fileURLToPath(import.meta.url);
-const __filename = path.dirname(__dirname);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const rootDir = path.resolve(__dirname, '..', '..', '..', '..');
 
