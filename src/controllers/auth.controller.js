@@ -15,7 +15,7 @@ function getToken(user) {
   return token;
 }
 
-export function register(req, res) {
+export async function register(req, res, next) {
   const user = req.body;
   try {
     const createdUser = postUser(user);
@@ -32,7 +32,7 @@ export function register(req, res) {
     if (err.name === 'Error') {
       return res.status(400).json({ message: err.message });
     }
-    res.status(500).json({ message: 'Internal server error' });
+    return next(err);
   }
 }
 

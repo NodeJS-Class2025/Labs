@@ -3,6 +3,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { faker } from '@faker-js/faker';
 import { getHashedPassword } from '../utils/getHashedPassword.js';
+import { writeJsonFileAsync } from '../utils/files/writeJsonFile.js';
+import { fileExists } from '../utils/files/fileUtils.js';
 import Logger from '../utils/logger/logger.js';
 import { USER_ROLES } from '../constants/userRoles.js';
 
@@ -30,15 +32,6 @@ function getTopicIndex() {
 
 function getPostIndex() {
   return postIndex++;
-}
-
-async function fileExists(path) {
-  try {
-    await fs.promises.access(path);
-    return true;
-  } catch {
-    return false;
-  }
 }
 
 function createRandomUser() {
@@ -86,11 +79,7 @@ async function createUsersFile(filename) {
       count: usersCount,
     });
     try {
-      await fs.promises.writeFile(
-        filename,
-        JSON.stringify(users, null, 2),
-        'utf-8'
-      );
+      await writeJsonFileAsync(filename, users);
       logger.info('Users file has been successfully created');
     } catch (err) {
       logger.error({ err });
@@ -104,11 +93,7 @@ async function createTopicsFile(filename) {
       count: topicsCount,
     });
     try {
-      await fs.promises.writeFile(
-        filename,
-        JSON.stringify(topics, null, 2),
-        'utf-8'
-      );
+      await writeJsonFileAsync(filename, topics);
       logger.info('Topics file has been successfully created');
     } catch (err) {
       logger.error({ err });
@@ -122,11 +107,7 @@ async function createPostsFile(filename) {
       count: postsCount,
     });
     try {
-      await fs.promises.writeFile(
-        filename,
-        JSON.stringify(posts, null, 2),
-        'utf-8'
-      );
+      await writeJsonFileAsync(filename, posts);
       logger.info('Posts file has been successfully created');
     } catch (err) {
       logger.error({ err });
