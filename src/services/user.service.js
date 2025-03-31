@@ -36,6 +36,7 @@ export function postUser(user) {
     ...user,
     password: getHashedPassword(user.password),
     email: String(user.email).toLowerCase(),
+    birthDate: String(user.birthDate).split('T')[0],
   };
   try {
     const createdUser = new User(createUser(newUser));
@@ -52,6 +53,9 @@ export function patchUser(id, updates) {
   }
   if (updates?.password) {
     resUpdates.password = getHashedPassword(updates.password);
+  }
+  if (updates?.birthDate) {
+    resUpdates.birthDate = updates.birthDate.split('T')[0];
   }
   try {
     const user = updateUser(id, resUpdates);
