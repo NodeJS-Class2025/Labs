@@ -5,7 +5,6 @@ class User {
     username,
     email,
     password,
-    rawPassword,
     birthDate,
     createdAt,
     updatedAt,
@@ -15,7 +14,6 @@ class User {
     this.username = username;
     this.email = email;
     this.password = password;
-    this.rawPassword = rawPassword;
     this.birthDate = birthDate;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;

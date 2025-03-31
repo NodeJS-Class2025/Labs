@@ -1,19 +1,16 @@
 import fs from 'node:fs';
-import Logger from '../logger/logger.js';
 
-const logger = new Logger();
-
-export function readFileSynchronously(filePath) {
+export function readJsonFileSync(filePath) {
   try {
     const json = fs.readFileSync(filePath, 'utf-8');
     const data = JSON.parse(json);
     return data;
   } catch (err) {
-    logger.error({ err });
+    throw err;
   }
 }
 
-export function readFileCallback(filePath, callback) {
+export function readJsonFileCallback(filePath, callback) {
   fs.readFile(filePath, 'utf-8', (err, json) => {
     if (err) {
       return callback(err);
@@ -27,18 +24,17 @@ export function readFileCallback(filePath, callback) {
   });
 }
 
-export function readFilePromise(filePath) {
+export function readJsonFilePromise(filePath) {
   return fs.promises
     .readFile(filePath, 'utf-8')
-    .then((json) => JSON.parse(json))
-    .catch((err) => logger.error({ err }));
+    .then((json) => JSON.parse(json));
 }
 
-export async function readFileAsync(filePath) {
+export async function readJsonFileAsync(filePath) {
   try {
     const json = await fs.promises.readFile(filePath, 'utf-8');
     return JSON.parse(json);
   } catch (err) {
-    logger.error({ err });
+    throw err;
   }
 }

@@ -8,7 +8,7 @@ export async function readData() {
     await Promise.all([readUsers()]); // topics, posts
     logger.info('Data successfully read');
   } catch (err) {
-    logger.error({ err, msg: 'While trying to read data' });
+    logger.error({ err, msg: 'while trying to read data' });
   }
 }
 
