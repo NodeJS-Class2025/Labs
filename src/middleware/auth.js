@@ -11,7 +11,9 @@ export function unAuth(req, res, next) {
   } catch (err) {
     return next();
   }
-  res.status(403).json({ message: 'Forbidden: already authenticated user' });
+  return res
+    .status(403)
+    .json({ message: 'Forbidden: already authenticated user' });
 }
 
 export function auth(req, res, next) {

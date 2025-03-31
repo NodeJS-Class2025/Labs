@@ -42,6 +42,14 @@ function findUserByUsername(username) {
   return users.find((user) => user.username === username);
 }
 
+export function getUserByEmail(email) {
+  return findUserByEmail(email);
+}
+
+export function getUserById(id) {
+  return users.find((user) => user.id === id);
+}
+
 export function createUser(user) {
   if (findUserByUsername(user.username)) {
     throw new Error('User with that username already exists');
@@ -62,6 +70,27 @@ export function createUser(user) {
   return createdUser;
 }
 
-export function getUserByEmail(email) {
-  return findUserByEmail(email);
+export function updateUser(id, updates) {
+  if (updates?.username && findUserByUsername(updates.username)) {
+    throw new Error('User with that username already exists');
+  }
+  if (updates?.email && findUserByEmail(updates.email)) {
+    throw new Error('User with that email already exists');
+  }
+
+  const user = getUserById(id);
+  if (!user) {
+    return null;
+  }
+  updates.updatedAt = new Date().toISOString();
+  return Object.assign(user, updates);
+}
+
+export function deleteUser(id) {
+  const userIndex = users.findIndex((user) => user.id === id);
+  if (userIndex === -1) {
+    return false;
+  }
+  users.splice(userIndex, 1);
+  return true;
 }
