@@ -5,6 +5,9 @@ import {
   postUser,
   verifyUser,
 } from '../services/user.service.js';
+import { ProfileInputDto } from '../dto/account/profile.input.dto.js';
+import { ProfileOutputDto } from '../dto/account/profile.output.dto.js';
+import { LoginInputDto } from '../dto/account/login.input.dto.js';
 
 function getToken(user) {
   const token = jwt.sign(
@@ -16,18 +19,20 @@ function getToken(user) {
 }
 
 export async function register(req, res, next) {
-  const user = req.body;
+  const userReq = new ProfileInputDto(req.body);
   try {
-    const createdUser = postUser(user);
+    const user = postUser(userReq);
 
-    const token = getToken(createdUser);
+    const userRes = new ProfileOutputDto(user);
+
+    const token = getToken(user);
 
     res.cookie('jwt', token, {
       httpOnly: true,
       maxAge: ms(`${process.env.COOKIE_LIFETIME_HOURS}h`),
     });
 
-    res.status(201).json(createdUser);
+    res.status(201).json(userRes);
   } catch (err) {
     if (err.name === 'Error') {
       return res.status(400).json({ message: err.message });
@@ -37,11 +42,13 @@ export async function register(req, res, next) {
 }
 
 export function login(req, res) {
-  const { email, password } = req.body;
+  const { email, password } = new LoginInputDto(req.body);
   const user = getUserByEmail(email);
   if (!verifyUser(user, password)) {
     return res.status(401).json({ message: 'Invalid email or password' });
   }
+
+  const userRes = new ProfileOutputDto(user);
 
   const token = getToken(user);
 
@@ -49,7 +56,7 @@ export function login(req, res) {
     httpOnly: true,
     maxAge: ms(`${process.env.COOKIE_LIFETIME_HOURS}h`),
   });
-  return res.status(201).json(user);
+  return res.status(200).json(userRes);
 }
 
 export function logout(req, res) {

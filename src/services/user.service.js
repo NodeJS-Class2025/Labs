@@ -32,14 +32,9 @@ export function getUser(id) {
 }
 
 export function postUser(user) {
-  const newUser = {
-    ...user,
-    password: getHashedPassword(user.password),
-    email: String(user.email).toLowerCase(),
-    birthDate: String(user.birthDate).split('T')[0],
-  };
+  user.password = getHashedPassword(user.password);
   try {
-    const createdUser = new User(createUser(newUser));
+    const createdUser = new User(createUser(user));
     return createdUser;
   } catch (err) {
     throw err;
@@ -47,15 +42,11 @@ export function postUser(user) {
 }
 
 export function patchUser(id, updates) {
-  const resUpdates = { ...updates };
-  if (updates?.email) {
-    resUpdates.email = updates.email.toLowerCase();
-  }
+  const resUpdates = Object.fromEntries(
+    Object.entries(updates).filter(([_, value]) => value !== undefined)
+  );
   if (updates?.password) {
     resUpdates.password = getHashedPassword(updates.password);
-  }
-  if (updates?.birthDate) {
-    resUpdates.birthDate = updates.birthDate.split('T')[0];
   }
   try {
     const user = updateUser(id, resUpdates);
