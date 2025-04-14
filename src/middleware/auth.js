@@ -2,48 +2,49 @@ import jwt from 'jsonwebtoken';
 import { USER_ROLES } from '../constants/userRoles.js';
 
 export function unAuth(req, res, next) {
-  const token = req.cookies.jwt;
-  if (!token) {
-    return next();
-  }
-  try {
-    jwt.verify(token, process.env.JWT_SECRET);
-  } catch (err) {
-    return next();
-  }
-  return res
-    .status(403)
-    .json({ message: 'Forbidden: already authenticated user' });
+	const token = req.cookies.jwt;
+	if (!token) {
+		return next();
+	}
+	try {
+		jwt.verify(token, process.env.JWT_SECRET);
+	} catch (err) {
+		return next();
+	}
+	return res
+		.status(403)
+		.json({ message: 'Forbidden: already authenticated user' });
 }
 
 export function auth(req, res, next) {
-  const token = req.cookies.jwt;
-  if (!token) {
-    return res.status(401).json({ message: 'Missed token' });
-  }
-  try {
-    jwt.verify(token, process.env.JWT_SECRET);
-  } catch (err) {
-    return res.status(401).json({ message: err.message });
-  }
+	const token = req.cookies.jwt;
+	if (!token) {
+		return res.status(401).json({ message: 'Missed token' });
+	}
+	try {
+		const payload = jwt.verify(token, process.env.JWT_SECRET);
+		req.user = payload;
+	} catch (err) {
+		return res.status(401).json({ message: err.message });
+	}
 
-  next();
+	next();
 }
 
 export function authAdmin(req, res, next) {
-  const token = req.cookies.jwt;
-  if (!token) {
-    return res.status(401).json({ message: 'Missed token' });
-  }
-  try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET);
-    if (payload.role !== USER_ROLES.ADMIN) {
-      res
-        .status(403)
-        .json({ message: 'Forbidden: administrative access required.' });
-    }
-  } catch (err) {
-    return res.status(401).json({ message: err.message });
-  }
-  next();
+	if (req.user?.role !== USER_ROLES.ADMIN) {
+		return res
+			.status(403)
+			.json({ message: 'Forbidden: administrative access required.' });
+	}
+	next();
+}
+
+export function authUser(req, res, next) {
+	if (!req.user || req.user.role === USER_ROLES.GUEST) {
+		return res
+			.status(403)
+			.json({ message: 'Forbidden: registered user access required.' });
+	}
+	next();
 }
