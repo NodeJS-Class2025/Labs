@@ -3,6 +3,7 @@ import {
   deleteProfile,
   getProfile,
   patchProfile,
+  patchProfileView
 } from '../controllers/user.controller.js';
 import { auth } from '../middleware/auth.js';
 import { patchProfileValidator } from '../middleware/validators/user.validator.js';
@@ -17,3 +18,6 @@ userRouter.patch('/profile/edit', auth, patchProfileValidator, patchProfile);
 
 // DELETE /users/profile/delete (only authorized users)
 userRouter.delete('/profile/delete', auth, deleteProfile);
+
+// GET /users/profile/edit (only authorized users)
+userRouter.get('/profile/edit', auth, patchProfileView);

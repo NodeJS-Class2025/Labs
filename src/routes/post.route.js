@@ -10,7 +10,7 @@ import {
   validateCreatePost,
   validateUpdatePost,
 } from '../middleware/validators/post.validator.js';
-import { auth, authUser } from '../middleware/auth.js';
+import { auth } from '../middleware/auth.js';
 
 export const postRouter = Router();
 

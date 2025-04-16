@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { login, logout, register } from '../controllers/auth.controller.js';
+import { login, logout, register, registerView, loginView } from '../controllers/auth.controller.js';
 import {
   loginValidator,
   registerValidator,
@@ -16,3 +16,9 @@ authRouter.post('/login', unAuth, loginValidator, login);
 
 // POST /auth/logout (only authorized users)
 authRouter.post('/logout', auth, logout);
+
+// GET /auth/register (only unauthorized users)
+authRouter.get('/register', unAuth, registerView);
+
+// GET /auth/login (only unauthorized users)
+authRouter.get('/login', unAuth, loginView);

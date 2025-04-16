@@ -5,7 +5,7 @@ import { ProfileInputDto } from '../dto/account/profile.input.dto.js';
 import { ProfileOutputDto } from '../dto/account/profile.output.dto.js';
 import { LoginInputDto } from '../dto/account/login.input.dto.js';
 
-function getToken(user) {
+const getToken = (user) => {
   const token = jwt.sign(
     { userId: user.id, role: user.role },
     process.env.JWT_SECRET,
@@ -14,12 +14,12 @@ function getToken(user) {
   return token;
 }
 
-export async function register(req, res, next) {
+export const register = async (req, res, next) => {
   const userReq = new ProfileInputDto(req.body);
   try {
     const user = userService.postUser(userReq);
 
-    const userRes = new ProfileOutputDto(user);
+    // const userRes = new ProfileOutputDto(user);
 
     const token = getToken(user);
 
@@ -27,21 +27,24 @@ export async function register(req, res, next) {
       httpOnly: true,
       maxAge: ms(`${process.env.COOKIE_LIFETIME_HOURS}h`),
     });
+    return res.redirect('/users/profile');
+    // return res.status(201).json(userRes);
 
-    res.status(201).json(userRes);
   } catch (err) {
     if (err.name === 'Error') {
-      return res.status(400).json({ message: err.message });
+      return res.render('register', {error: err.message});
+      // return res.status(400).json({ message: err.message });
     }
     return next(err);
   }
 }
 
-export function login(req, res) {
+export const login = (req, res) => {
   const { email, password } = new LoginInputDto(req.body);
   const user = userService.getUserByEmail(email);
   if (!userService.verifyUser(user, password)) {
-    return res.status(401).json({ message: 'Invalid email or password' });
+    return res.render('login', {error: 'Invalid email or password'})
+    // return res.status(401).json({ message: 'Invalid email or password' });
   }
 
   const userRes = new ProfileOutputDto(user);
@@ -52,10 +55,20 @@ export function login(req, res) {
     httpOnly: true,
     maxAge: ms(`${process.env.COOKIE_LIFETIME_HOURS}h`),
   });
-  return res.status(200).json(userRes);
+  return res.redirect('/users/profile');
+  // return res.status(200).json(userRes);
 }
 
-export function logout(req, res) {
+export const logout = (req, res) => {
   res.clearCookie('jwt');
-  res.sendStatus(204);
+  return res.redirect('/auth/login');
+  // return res.sendStatus(204);
+}
+
+export const registerView = (req, res) => {
+  return res.render('register');
+}
+
+export const loginView = (req, res) => {
+  return res.render('login');
 }

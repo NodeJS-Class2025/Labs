@@ -19,9 +19,14 @@ export const idValidator =
     }
 
     if (errors.length) {
-      return res.status(400).json({
-        errors: errors,
+      let message = '';
+      errors.forEach((err) => {
+        message += err.message + '\n';
       });
+      return res.render('error', {message })
+      // return res.status(400).json({
+      //   errors: errors,
+      // });
     }
 
     next();

@@ -11,21 +11,24 @@ export function unAuth(req, res, next) {
   } catch (err) {
     return next();
   }
-  return res
-    .status(403)
-    .json({ message: 'Forbidden: already authenticated user' });
+  return res.redirect('/users/profile');
+  // return res
+  //   .status(403)
+  //   .json({ message: 'Forbidden: already authenticated user' });
 }
 
 export function auth(req, res, next) {
   const token = req.cookies.jwt;
   if (!token) {
-    return res.status(401).json({ message: 'Missed token' });
+    return res.render('login', {error: 'Missed token' })
+    // return res.status(401).json({ message: 'Missed token' });
   }
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET);
     req.user = payload;
   } catch (err) {
-    return res.status(401).json({ message: err.message });
+    return res.render('login', {error: err.message })
+    // return res.status(401).json({ message: err.message });
   }
 
   next();
@@ -34,27 +37,21 @@ export function auth(req, res, next) {
 export function authAdmin(req, res, next) {
   const token = req.cookies.jwt;
   if (!token) {
-    return res.status(401).json({ message: 'Missed token' });
+    return res.render('login', {error: 'Missed token' });
+    // return res.status(401).json({ message: 'Missed token' });
   }
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET);
     if (payload.role !== USER_ROLES.ADMIN) {
-      return res
-        .status(403)
-        .json({ message: 'Forbidden: administrative access required.' });
+      return res.render('error', {message: 'Forbidden: administrative access required'});
+      // return res
+      //   .status(403)
+      //   .json({ message: 'Forbidden: administrative access required.' });
     }
     req.user = payload;
   } catch (err) {
-    return res.status(401).json({ message: err.message });
-  }
-  next();
-}
-
-export function authUser(req, res, next) {
-  if (!req.user || req.user.role === USER_ROLES.GUEST) {
-    return res
-      .status(403)
-      .json({ message: 'Forbidden: registered user access required.' });
+    return res.render('login', {error: err.message })
+    // return res.status(401).json({ message: err.message });
   }
   next();
 }

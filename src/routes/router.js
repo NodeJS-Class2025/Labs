@@ -6,6 +6,10 @@ import { topicRouter } from './topic.route.js';
 
 const router = new Router();
 
+router.get('/', (req, res) => {
+  return res.render('index');
+})
+
 router.use('/auth', authRouter);
 router.use('/users', userRouter);
 router.use('/posts', postRouter);

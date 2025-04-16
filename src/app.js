@@ -24,17 +24,19 @@ app.use(cookieParser());
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'src', 'views'));
+app.set('views', path.join(__dirname, 'views'));
 
 app.use('/', router);
 
 app.use((req, res, next) => {
-  res.status(404).json({ message: 'Not Found' });
+  return res.render('404');
+  // res.status(404).json({ message: 'Not Found' });
 });
 
 app.use((err, req, res, next) => {
   logger.error({ err });
-  res.status(500).json({ message: 'Internal server error' });
+  return res.render('error', {message: 'Internal server error'});
+  // res.status(500).json({ message: 'Internal server error' });
 });
 
 const server = app.listen(process.env.APP_PORT || 3000, () => {
