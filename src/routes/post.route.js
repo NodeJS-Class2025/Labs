@@ -1,14 +1,14 @@
 import { Router } from 'express';
 import {
-	getAllPosts,
-	getPostById,
-	createPost,
-	updatePost,
-	deletePost,
+  getAllPosts,
+  getPostById,
+  createPost,
+  updatePost,
+  deletePost,
 } from '../controllers/post.controller.js';
 import {
-	validateCreatePost,
-	validateUpdatePost,
+  validateCreatePost,
+  validateUpdatePost,
 } from '../middleware/validators/post.validator.js';
 import { auth, authUser } from '../middleware/auth.js';
 
@@ -21,10 +21,10 @@ postRouter.get('/', getAllPosts);
 postRouter.get('/:id', getPostById);
 
 // POST /posts (only registered users)
-postRouter.post('/', auth, authUser, validateCreatePost, createPost);
+postRouter.post('/', auth, validateCreatePost, createPost);
 
 // PUT /posts/:id (only registered users)
-postRouter.put('/:id', auth, authUser, validateUpdatePost, updatePost);
+postRouter.put('/:id', auth, validateUpdatePost, updatePost);
 
 // DELETE /posts/:id (only registered users)
-postRouter.delete('/:id', auth, authUser, deletePost);
+postRouter.delete('/:id', auth, deletePost);

@@ -1,14 +1,14 @@
 import { Router } from 'express';
 import {
-	getAllTopics,
-	getTopicById,
-	createTopic,
-	updateTopic,
-	deleteTopic,
+  getAllTopics,
+  getTopicById,
+  createTopic,
+  updateTopic,
+  deleteTopic,
 } from '../controllers/topic.controller.js';
 import {
-	validateCreateTopic,
-	validateUpdateTopic,
+  validateCreateTopic,
+  validateUpdateTopic,
 } from '../middleware/validators/topic.validator.js';
 import { auth, authAdmin } from '../middleware/auth.js';
 
@@ -21,10 +21,10 @@ topicRouter.get('/', getAllTopics);
 topicRouter.get('/:id', getTopicById);
 
 // POST /topics (only admin)
-topicRouter.post('/', auth, authAdmin, validateCreateTopic, createTopic);
+topicRouter.post('/', authAdmin, validateCreateTopic, createTopic);
 
 // PUT /topics/:id (only admin)
-topicRouter.put('/:id', auth, authAdmin, validateUpdateTopic, updateTopic);
+topicRouter.put('/:id', authAdmin, validateUpdateTopic, updateTopic);
 
 // DELETE /topics/:id (only admin)
-topicRouter.delete('/:id', auth, authAdmin, deleteTopic);
+topicRouter.delete('/:id', authAdmin, deleteTopic);
