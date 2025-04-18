@@ -1,5 +1,11 @@
 import { Router } from 'express';
-import { login, logout, register, registerView, loginView } from '../controllers/auth.controller.js';
+import {
+  login,
+  logout,
+  register,
+  registerView,
+  loginView,
+} from '../controllers/auth.controller.js';
 import {
   loginValidator,
   registerValidator,

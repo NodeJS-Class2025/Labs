@@ -29,13 +29,13 @@ app.set('views', path.join(__dirname, 'views'));
 app.use('/', router);
 
 app.use((req, res, next) => {
-  return res.render('404');
+  return res.status(404).render('404');
   // res.status(404).json({ message: 'Not Found' });
 });
 
 app.use((err, req, res, next) => {
   logger.error({ err });
-  return res.render('error', {message: 'Internal server error'});
+  return res.status(500).render('error', { message: 'Internal server error' });
   // res.status(500).json({ message: 'Internal server error' });
 });
 

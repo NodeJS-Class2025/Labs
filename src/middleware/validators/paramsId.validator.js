@@ -1,6 +1,6 @@
 import Joi from 'joi';
 
-const idSchema = Joi.number().integer().positive();
+const idSchema = Joi.number().integer().positive().label('url id');
 
 // Example: idValidator(['itemId'])
 export const idValidator =
@@ -21,9 +21,9 @@ export const idValidator =
     if (errors.length) {
       let message = '';
       errors.forEach((err) => {
-        message += err.message + '\n';
+        message += err + '\n';
       });
-      return res.render('error', {message })
+      return res.status(400).render('error', { message });
       // return res.status(400).json({
       //   errors: errors,
       // });

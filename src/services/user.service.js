@@ -23,11 +23,7 @@ class UserService {
 
   postUser(user) {
     user.password = getHashedPassword(user.password);
-    try {
-      return userRepository.createUser(user);
-    } catch (err) {
-      throw err;
-    }
+    return userRepository.createUser(user);
   }
 
   patchUser(id, updates) {
@@ -37,11 +33,7 @@ class UserService {
     if (updates?.password) {
       resUpdates.password = getHashedPassword(updates.password);
     }
-    try {
-      return userRepository.updateUser(id, resUpdates);
-    } catch (err) {
-      throw err;
-    }
+    return userRepository.updateUser(id, resUpdates);
   }
 
   deleteUser(id) {

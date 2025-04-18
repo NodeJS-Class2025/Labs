@@ -40,6 +40,10 @@ class UserRepository {
     }
   }
 
+  _findUserById(id) {
+    return users.find((user) => user.id === id);
+  }
+
   _findUserByEmail(email) {
     return users.find((user) => user.email === email);
   }
@@ -57,7 +61,7 @@ class UserRepository {
   }
 
   getUserById(id) {
-    const user = users.find((user) => user.id === id);
+    const user = this._findUserById(id);
     if (!user) {
       return null;
     }
@@ -85,14 +89,20 @@ class UserRepository {
   }
 
   updateUser(id, updates) {
-    if (updates?.username && this._findUserByUsername(updates.username)) {
+    if (
+      updates?.username &&
+      users.find((user) => user.username === updates.username && user.id !== id)
+    ) {
       throw new Error('User with that username already exists');
     }
-    if (updates?.email && this._findUserByEmail(updates.email)) {
+    if (
+      updates?.email &&
+      users.find((user) => user.email === updates.email && user.id !== id)
+    ) {
       throw new Error('User with that email already exists');
     }
 
-    const user = this.getUserById(id);
+    const user = this._findUserById(id);
     if (!user) {
       return null;
     }

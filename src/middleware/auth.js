@@ -20,14 +20,14 @@ export function unAuth(req, res, next) {
 export function auth(req, res, next) {
   const token = req.cookies.jwt;
   if (!token) {
-    return res.render('login', {error: 'Missed token' })
+    return res.redirect('/auth/login');
     // return res.status(401).json({ message: 'Missed token' });
   }
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET);
     req.user = payload;
   } catch (err) {
-    return res.render('login', {error: err.message })
+    return res.redirect('/auth/login');
     // return res.status(401).json({ message: err.message });
   }
 
@@ -37,20 +37,22 @@ export function auth(req, res, next) {
 export function authAdmin(req, res, next) {
   const token = req.cookies.jwt;
   if (!token) {
-    return res.render('login', {error: 'Missed token' });
+    return res.redirect('/auth/login');
     // return res.status(401).json({ message: 'Missed token' });
   }
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET);
     if (payload.role !== USER_ROLES.ADMIN) {
-      return res.render('error', {message: 'Forbidden: administrative access required'});
+      return res.status(403).render('error', {
+        message: 'Forbidden: administrative access required',
+      });
       // return res
       //   .status(403)
       //   .json({ message: 'Forbidden: administrative access required.' });
     }
     req.user = payload;
   } catch (err) {
-    return res.render('login', {error: err.message })
+    return res.redirect('/auth/login');
     // return res.status(401).json({ message: err.message });
   }
   next();

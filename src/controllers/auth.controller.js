@@ -12,7 +12,7 @@ const getToken = (user) => {
     { expiresIn: process.env.JWT_LIFETIME }
   );
   return token;
-}
+};
 
 export const register = async (req, res, next) => {
   const userReq = new ProfileInputDto(req.body);
@@ -29,21 +29,20 @@ export const register = async (req, res, next) => {
     });
     return res.redirect('/users/profile');
     // return res.status(201).json(userRes);
-
   } catch (err) {
     if (err.name === 'Error') {
-      return res.render('register', {error: err.message});
+      return res.status(400).render('register', { error: err.message });
       // return res.status(400).json({ message: err.message });
     }
     return next(err);
   }
-}
+};
 
 export const login = (req, res) => {
   const { email, password } = new LoginInputDto(req.body);
   const user = userService.getUserByEmail(email);
   if (!userService.verifyUser(user, password)) {
-    return res.render('login', {error: 'Invalid email or password'})
+    return res.status(401).render('login', { error: 'Invalid email or password' });
     // return res.status(401).json({ message: 'Invalid email or password' });
   }
 
@@ -57,18 +56,18 @@ export const login = (req, res) => {
   });
   return res.redirect('/users/profile');
   // return res.status(200).json(userRes);
-}
+};
 
 export const logout = (req, res) => {
   res.clearCookie('jwt');
   return res.redirect('/auth/login');
   // return res.sendStatus(204);
-}
+};
 
 export const registerView = (req, res) => {
   return res.render('register');
-}
+};
 
 export const loginView = (req, res) => {
   return res.render('login');
-}
+};
