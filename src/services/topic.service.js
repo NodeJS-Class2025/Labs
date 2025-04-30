@@ -1,41 +1,41 @@
-import { v4 as uuidv4 } from 'uuid';
-import TopicRepository from '../repositories/topic.repository.js';
-import Topic from '../models/Topic.model.js';
+import topicRepository from '../repositories/topic.repository.js';
+import { USER_ROLES } from '../constants/userRoles.js';
 
 class TopicService {
-	async getAllTopics() {
-		return await TopicRepository.getAll();
+	getAllTopics() {
+		return topicRepository.getAll();
 	}
 
-	async getTopicById(id) {
-		return await TopicRepository.getById(id);
+	getTopic(id) {
+		return topicRepository.getById(id);
 	}
 
-	async createTopic(createTopicDto) {
-		const newTopic = new Topic({
-			id: uuidv4(),
-			title: createTopicDto.title,
-			description: createTopicDto.description,
-		});
-
-		return await TopicRepository.create(newTopic);
+	createTopic(userId, dto) {
+		return topicRepository.createTopic(userId, dto);
 	}
 
-	async updateTopic(id, updateTopicDto) {
-		const existing = await TopicRepository.getById(id);
-		if (!existing) {
-			return null;
+	updateTopic(currentUser, topicId, dto) {
+		const topic = topicRepository.getById(topicId);
+		if (!topic) return null;
+		if (
+			currentUser.role !== USER_ROLES.ADMIN &&
+			topic.userId !== currentUser.userId
+		) {
+			throw new Error('Forbidden');
 		}
-		const updated = await TopicRepository.update(id, {
-			title: updateTopicDto.title ?? existing.title,
-			description: updateTopicDto.description ?? existing.description,
-		});
-		return updated;
+		return topicRepository.updateTopic(topicId, dto);
 	}
 
-	async deleteTopic(id) {
-		const result = await TopicRepository.delete(id);
-		return result;
+	deleteTopic(currentUser, topicId) {
+		const topic = topicRepository.getById(topicId);
+		if (!topic) return null;
+		if (
+			currentUser.role !== USER_ROLES.ADMIN &&
+			topic.userId !== currentUser.userId
+		) {
+			throw new Error('Forbidden');
+		}
+		return topicRepository.deleteTopic(topicId);
 	}
 }
 

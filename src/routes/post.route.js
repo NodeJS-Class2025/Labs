@@ -1,30 +1,31 @@
 import { Router } from 'express';
 import {
-  getAllPosts,
-  getPostById,
-  createPost,
-  updatePost,
-  deletePost,
+	getPosts,
+	getPost,
+	getPostsByTopic,
+	postPost,
+	patchPost,
+	deletePost,
 } from '../controllers/post.controller.js';
-import {
-  validateCreatePost,
-  validateUpdatePost,
-} from '../middleware/validators/post.validator.js';
 import { auth } from '../middleware/auth.js';
+import {
+	createPostValidator,
+	updatePostValidator,
+} from '../middleware/validators/post.validator.js';
+import { idValidator } from '../middleware/validators/paramsId.validator.js';
 
 export const postRouter = Router();
 
-// GET /posts
-postRouter.get('/', getAllPosts);
+postRouter.get('/', getPosts);
+postRouter.get('/:postId', idValidator(['postId']), getPost);
+postRouter.get('/topic/:topicId', idValidator(['topicId']), getPostsByTopic);
 
-// GET /posts/:id
-postRouter.get('/:id', getPostById);
-
-// POST /posts (only registered users)
-postRouter.post('/', auth, validateCreatePost, createPost);
-
-// PUT /posts/:id (only registered users)
-postRouter.put('/:id', auth, validateUpdatePost, updatePost);
-
-// DELETE /posts/:id (only registered users)
-postRouter.delete('/:id', auth, deletePost);
+postRouter.post('/', auth, createPostValidator, postPost);
+postRouter.patch(
+	'/:postId',
+	auth,
+	idValidator(['postId']),
+	updatePostValidator,
+	patchPost
+);
+postRouter.delete('/:postId', auth, idValidator(['postId']), deletePost);

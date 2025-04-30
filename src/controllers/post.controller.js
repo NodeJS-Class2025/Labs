@@ -1,62 +1,71 @@
-import PostService from '../services/post.service.js';
-import CreatePostDto from '../dto/post/createPost.dto.js';
-import UpdatePostDto from '../dto/post/updatePost.dto.js';
+import postService from '../services/post.service.js';
+import { CreatePostDto } from '../dto/post/createPost.dto.js';
+import { UpdatePostDto } from '../dto/post/updatePost.dto.js';
 
-export const getAllPosts = async (req, res) => {
+export const getPosts = (req, res) => {
+	return res.status(200).json(postService.getAllPosts());
+};
+
+export const getPost = (req, res) => {
+	const post = postService.getPost(parseInt(req.params.postId));
+	if (!post) {
+		return res.status(404).json({ message: 'Post not found' });
+	}
+	return res.status(200).json(post);
+};
+
+export const getPostsByTopic = (req, res) => {
+	const posts = postService.getPostsByTopic(parseInt(req.params.topicId));
+	return res.status(200).json(posts);
+};
+
+export const postPost = (req, res, next) => {
+	const dto = new CreatePostDto(req.body);
 	try {
-		const posts = await PostService.getAllPosts();
-		return res.json(posts);
-	} catch (error) {
-		return res.status(500).json({ error: error.message });
+		const post = postService.createPost(req.user.userId, dto);
+		return res.status(201).json(post);
+	} catch (err) {
+		if (err.message === 'Topic not found') {
+			return res.status(404).json({ message: err.message });
+		}
+		next(err);
 	}
 };
 
-export const getPostById = async (req, res) => {
+export const patchPost = (req, res, next) => {
+	const dto = new UpdatePostDto(req.body);
 	try {
-		const { id } = req.params;
-		const post = await PostService.getPostById(id);
+		const post = postService.updatePost(
+			req.user,
+			parseInt(req.params.postId),
+			dto
+		);
 		if (!post) {
 			return res.status(404).json({ message: 'Post not found' });
 		}
-		return res.json(post);
-	} catch (error) {
-		return res.status(500).json({ error: error.message });
+		return res.status(200).json(post);
+	} catch (err) {
+		if (err.message === 'Forbidden') {
+			return res.status(403).json({ message: 'Forbidden' });
+		}
+		next(err);
 	}
 };
 
-export const createPost = async (req, res) => {
+export const deletePost = (req, res, next) => {
 	try {
-		const dto = new CreatePostDto(req.body);
-		const newPost = await PostService.createPost(dto);
-		return res.status(201).json(newPost);
-	} catch (error) {
-		return res.status(500).json({ error: error.message });
-	}
-};
-
-export const updatePost = async (req, res) => {
-	try {
-		const { id } = req.params;
-		const dto = new UpdatePostDto(req.body);
-		const updated = await PostService.updatePost(id, dto);
-		if (!updated) {
+		const result = postService.deletePost(
+			req.user,
+			parseInt(req.params.postId)
+		);
+		if (result === null) {
 			return res.status(404).json({ message: 'Post not found' });
 		}
-		return res.json(updated);
-	} catch (error) {
-		return res.status(500).json({ error: error.message });
-	}
-};
-
-export const deletePost = async (req, res) => {
-	try {
-		const { id } = req.params;
-		const deleted = await PostService.deletePost(id);
-		if (!deleted) {
-			return res.status(404).json({ message: 'Post not found' });
+		return res.sendStatus(204);
+	} catch (err) {
+		if (err.message === 'Forbidden') {
+			return res.status(403).json({ message: 'Forbidden' });
 		}
-		return res.json({ message: 'Post deleted' });
-	} catch (error) {
-		return res.status(500).json({ error: error.message });
+		next(err);
 	}
 };

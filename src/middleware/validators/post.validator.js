@@ -1,41 +1,30 @@
 import Joi from 'joi';
 
 const createPostSchema = Joi.object({
-	topicId: Joi.string().uuid().required(),
-	content: Joi.string().min(10).max(1000).required(),
-	authorId: Joi.string().uuid().required(),
+	topicId: Joi.number().integer().positive().required(),
+	description: Joi.string().min(1).max(1000).required(),
 });
 
 const updatePostSchema = Joi.object({
-	content: Joi.string().min(10).max(1000),
-}).min(1);
+	description: Joi.string().min(1).max(1000),
+})
+	.min(1)
+	.unknown(false);
 
-export async function validateCreatePost(req, res, next) {
+export async function createPostValidator(req, res, next) {
 	try {
-		await createPostSchema.validateAsync(req.body, {
-			allowUnknown: false,
-			abortEarly: false,
-		});
-		next();
+		await createPostSchema.validateAsync(req.body, { abortEarly: false });
 	} catch (err) {
-		return res.status(400).json({
-			error: err.message,
-			details: err.details.map((d) => d.message),
-		});
+		return res.status(400).render('error', { message: err.message });
 	}
+	next();
 }
 
-export async function validateUpdatePost(req, res, next) {
+export async function updatePostValidator(req, res, next) {
 	try {
-		await updatePostSchema.validateAsync(req.body, {
-			allowUnknown: false,
-			abortEarly: false,
-		});
-		next();
+		await updatePostSchema.validateAsync(req.body, { abortEarly: false });
 	} catch (err) {
-		return res.status(400).json({
-			error: err.message,
-			details: err.details.map((d) => d.message),
-		});
+		return res.status(400).render('error', { message: err.message });
 	}
+	next();
 }

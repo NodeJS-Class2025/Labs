@@ -1,7 +1,5 @@
-class UpdatePostDto {
-	constructor({ content }) {
-		this.content = content;
+export class UpdatePostDto {
+	constructor({ description }) {
+		this.description = description;
 	}
 }
-
-export default UpdatePostDto;

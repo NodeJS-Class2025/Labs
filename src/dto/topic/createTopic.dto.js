@@ -1,8 +1,5 @@
-class CreateTopicDto {
-	constructor({ title, description }) {
-		this.title = title;
-		this.description = description;
+export class CreateTopicDto {
+	constructor({ title }) {
+		this.title = title?.trim();
 	}
 }
-
-export default CreateTopicDto;

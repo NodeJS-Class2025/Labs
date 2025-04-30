@@ -1,9 +1,10 @@
 class Topic {
-	constructor({ id, title, description, createdAt }) {
+	constructor({ id, userId, title, createdAt, updatedAt }) {
 		this.id = id;
+		this.userId = userId;
 		this.title = title;
-		this.description = description;
-		this.createdAt = createdAt || new Date().toISOString();
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
 	}
 }
 

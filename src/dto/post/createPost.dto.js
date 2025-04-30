@@ -1,9 +1,6 @@
-class CreatePostDto {
-	constructor({ topicId, content, authorId }) {
-		this.topicId = topicId;
-		this.content = content;
-		this.authorId = authorId;
+export class CreatePostDto {
+	constructor({ topicId, description }) {
+		this.topicId = Number(topicId);
+		this.description = description;
 	}
 }
-
-export default CreatePostDto;

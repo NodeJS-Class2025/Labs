@@ -1,62 +1,84 @@
-import fs from 'fs/promises';
-import path from 'path';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { readJsonFileAsync } from '../utils/files/readJsonFile.js';
+import { writeJsonFileAsync } from '../utils/files/writeJsonFile.js';
+import Logger from '../utils/logger/logger.js';
 import Post from '../models/Post.model.js';
 
-const postsFilePath = path.join(
-	path.dirname(new URL(import.meta.url).pathname),
-	'../mock/posts.json'
-);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const logger = new Logger();
+
+const posts = [];
+const pathToFile = path.resolve(__dirname, '..', 'mock', 'posts.mock.json');
 
 class PostRepository {
-	async getAll() {
-		const data = await this._readFile();
-		return data.map((item) => new Post(item));
+	constructor() {
+		this.PostModel = Post;
 	}
 
-	async getById(id) {
-		const data = await this._readFile();
-		const found = data.find((post) => post.id === id);
-		return found ? new Post(found) : null;
-	}
-
-	async create(postInstance) {
-		const data = await this._readFile();
-		data.push(postInstance);
-		await this._writeFile(data);
-		return postInstance;
-	}
-
-	async update(id, updatedFields) {
-		const data = await this._readFile();
-		const index = data.findIndex((p) => p.id === id);
-		if (index === -1) return null;
-
-		data[index] = { ...data[index], ...updatedFields };
-		await this._writeFile(data);
-		return data[index];
-	}
-
-	async delete(id) {
-		const data = await this._readFile();
-		const newData = data.filter((p) => p.id !== id);
-		if (newData.length === data.length) {
-			return false;
-		}
-		await this._writeFile(newData);
-		return true;
-	}
-
-	async _readFile() {
+	async readPosts() {
 		try {
-			const fileContent = await fs.readFile(postsFilePath, 'utf-8');
-			return JSON.parse(fileContent);
-		} catch (error) {
-			return [];
+			const raw = await readJsonFileAsync(pathToFile);
+			raw.forEach((p) => posts.push(p));
+		} catch (err) {
+			logger.error({ err });
 		}
 	}
 
-	async _writeFile(data) {
-		await fs.writeFile(postsFilePath, JSON.stringify(data, null, 2));
+	async writePosts() {
+		await writeJsonFileAsync(pathToFile, posts);
+	}
+
+	_findById(id) {
+		return posts.find((p) => p.id === id);
+	}
+
+	getAll() {
+		return posts.map((p) => new this.PostModel(p));
+	}
+
+	getById(id) {
+		const post = this._findById(id);
+		return post ? new this.PostModel(post) : null;
+	}
+
+	getByTopic(topicId) {
+		return posts
+			.filter((p) => p.topicId === topicId)
+			.map((p) => new this.PostModel(p));
+	}
+
+	createPost(userId, { topicId, description }) {
+		const now = new Date().toISOString();
+		const post = {
+			id: posts.length + 1,
+			topicId,
+			userId,
+			description,
+			createdAt: now,
+			updatedAt: now,
+		};
+		posts.push(post);
+		return new this.PostModel(post);
+	}
+
+	updatePost(id, { description }) {
+		const post = this._findById(id);
+		if (!post) return null;
+
+		if (description !== undefined) post.description = description;
+		post.updatedAt = new Date().toISOString();
+
+		return new this.PostModel(post);
+	}
+
+	deletePost(id) {
+		const idx = posts.findIndex((p) => p.id === id);
+		if (idx === -1) return false;
+		posts.splice(idx, 1);
+		return true;
 	}
 }
 

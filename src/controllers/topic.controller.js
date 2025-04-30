@@ -1,63 +1,59 @@
-import TopicService from '../services/topic.service.js';
-import CreateTopicDto from '../dto/topic/createTopic.dto.js';
-import UpdateTopicDto from '../dto/topic/updateTopic.dto.js';
+import topicService from '../services/topic.service.js';
+import { CreateTopicDto } from '../dto/topic/createTopic.dto.js';
+import { UpdateTopicDto } from '../dto/topic/updateTopic.dto.js';
 
-export const getAllTopics = async (req, res) => {
-	try {
-		const topics = await TopicService.getAllTopics();
-		return res.json(topics);
-	} catch (error) {
-		return res.status(500).json({ error: error.message });
-	}
+export const getTopics = (req, res) => {
+	return res.status(200).json(topicService.getAllTopics());
 };
 
-export const getTopicById = async (req, res) => {
+export const getTopic = (req, res) => {
+	const topic = topicService.getTopic(parseInt(req.params.topicId));
+	if (!topic) {
+		return res.status(404).json({ message: 'Topic not found' });
+	}
+	return res.status(200).json(topic);
+};
+
+export const postTopic = (req, res) => {
+	const dto = new CreateTopicDto(req.body);
+	const topic = topicService.createTopic(req.user.userId, dto);
+	return res.status(201).json(topic);
+};
+
+export const patchTopic = (req, res, next) => {
+	const dto = new UpdateTopicDto(req.body);
 	try {
-		const { id } = req.params;
-		const topic = await TopicService.getTopicById(id);
+		const topic = topicService.updateTopic(
+			req.user,
+			parseInt(req.params.topicId),
+			dto
+		);
 		if (!topic) {
 			return res.status(404).json({ message: 'Topic not found' });
 		}
-		return res.json(topic);
-	} catch (error) {
-		return res.status(500).json({ error: error.message });
+		return res.status(200).json(topic);
+	} catch (err) {
+		if (err.message === 'Forbidden') {
+			return res.status(403).json({ message: 'Forbidden' });
+		}
+		next(err);
 	}
 };
 
-export const createTopic = async (req, res) => {
+export const deleteTopic = (req, res, next) => {
 	try {
-		const dto = new CreateTopicDto(req.body);
-		const createdTopic = await TopicService.createTopic(dto);
-		return res.status(201).json(createdTopic);
-	} catch (error) {
-		return res.status(500).json({ error: error.message });
-	}
-};
-
-export const updateTopic = async (req, res) => {
-	try {
-		const { id } = req.params;
-		const dto = new UpdateTopicDto(req.body);
-		const updated = await TopicService.updateTopic(id, dto);
-
-		if (!updated) {
+		const result = topicService.deleteTopic(
+			req.user,
+			parseInt(req.params.topicId)
+		);
+		if (result === null) {
 			return res.status(404).json({ message: 'Topic not found' });
 		}
-		return res.json(updated);
-	} catch (error) {
-		return res.status(500).json({ error: error.message });
-	}
-};
-
-export const deleteTopic = async (req, res) => {
-	try {
-		const { id } = req.params;
-		const deleted = await TopicService.deleteTopic(id);
-		if (!deleted) {
-			return res.status(404).json({ message: 'Topic not found' });
+		return res.sendStatus(204);
+	} catch (err) {
+		if (err.message === 'Forbidden') {
+			return res.status(403).json({ message: 'Forbidden' });
 		}
-		return res.json({ message: 'Topic deleted' });
-	} catch (error) {
-		return res.status(500).json({ error: error.message });
+		next(err);
 	}
 };

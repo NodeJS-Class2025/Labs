@@ -1,39 +1,48 @@
-import { v4 as uuidv4 } from 'uuid';
-import PostRepository from '../repositories/post.repository.js';
-import Post from '../models/Post.model.js';
+import postRepository from '../repositories/post.repository.js';
+import topicRepository from '../repositories/topic.repository.js';
+import { USER_ROLES } from '../constants/userRoles.js';
 
 class PostService {
-	async getAllPosts() {
-		return await PostRepository.getAll();
+	getAllPosts() {
+		return postRepository.getAll();
 	}
 
-	async getPostById(id) {
-		return await PostRepository.getById(id);
+	getPost(id) {
+		return postRepository.getById(id);
 	}
 
-	async createPost(createPostDto) {
-		const newPost = new Post({
-			id: uuidv4(),
-			topicId: createPostDto.topicId,
-			content: createPostDto.content,
-			authorId: createPostDto.authorId,
-		});
-		return await PostRepository.create(newPost);
+	getPostsByTopic(topicId) {
+		return postRepository.getByTopic(topicId);
 	}
 
-	async updatePost(id, updatePostDto) {
-		const existing = await PostRepository.getById(id);
-		if (!existing) {
-			return null;
+	createPost(userId, dto) {
+		const topic = topicRepository.getById(dto.topicId);
+		if (!topic) throw new Error('Topic not found');
+		return postRepository.createPost(userId, dto);
+	}
+
+	updatePost(currentUser, postId, dto) {
+		const post = postRepository.getById(postId);
+		if (!post) return null;
+		if (
+			currentUser.role !== USER_ROLES.ADMIN &&
+			post.userId !== currentUser.userId
+		) {
+			throw new Error('Forbidden');
 		}
-		const updated = await PostRepository.update(id, {
-			content: updatePostDto.content ?? existing.content,
-		});
-		return updated;
+		return postRepository.updatePost(postId, dto);
 	}
 
-	async deletePost(id) {
-		return await PostRepository.delete(id);
+	deletePost(currentUser, postId) {
+		const post = postRepository.getById(postId);
+		if (!post) return null;
+		if (
+			currentUser.role !== USER_ROLES.ADMIN &&
+			post.userId !== currentUser.userId
+		) {
+			throw new Error('Forbidden');
+		}
+		return postRepository.deletePost(postId);
 	}
 }
 

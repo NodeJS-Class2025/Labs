@@ -1,30 +1,31 @@
 import { Router } from 'express';
 import {
-  getAllTopics,
-  getTopicById,
-  createTopic,
-  updateTopic,
-  deleteTopic,
+	getTopics,
+	getTopic,
+	postTopic,
+	patchTopic,
+	deleteTopic,
 } from '../controllers/topic.controller.js';
+import { auth } from '../middleware/auth.js';
 import {
-  validateCreateTopic,
-  validateUpdateTopic,
+	createTopicValidator,
+	updateTopicValidator,
 } from '../middleware/validators/topic.validator.js';
-import { auth, authAdmin } from '../middleware/auth.js';
+import { idValidator } from '../middleware/validators/paramsId.validator.js';
 
 export const topicRouter = Router();
 
-// GET /topics
-topicRouter.get('/', getAllTopics);
+topicRouter.get('/', getTopics);
+topicRouter.get('/:topicId', idValidator(['topicId']), getTopic);
 
-// GET /topics/:id
-topicRouter.get('/:id', getTopicById);
+topicRouter.post('/', auth, createTopicValidator, postTopic);
 
-// POST /topics (only admin)
-topicRouter.post('/', authAdmin, validateCreateTopic, createTopic);
+topicRouter.patch(
+	'/:topicId',
+	auth,
+	idValidator(['topicId']),
+	updateTopicValidator,
+	patchTopic
+);
 
-// PUT /topics/:id (only admin)
-topicRouter.put('/:id', authAdmin, validateUpdateTopic, updateTopic);
-
-// DELETE /topics/:id (only admin)
-topicRouter.delete('/:id', authAdmin, deleteTopic);
+topicRouter.delete('/:topicId', auth, idValidator(['topicId']), deleteTopic);

@@ -1,41 +1,29 @@
 import Joi from 'joi';
 
 const createTopicSchema = Joi.object({
-	title: Joi.string().min(3).max(100).required(),
-	description: Joi.string().min(10).max(500).required(),
+	title: Joi.string().min(4).max(150).required(),
 });
 
 const updateTopicSchema = Joi.object({
-	title: Joi.string().min(3).max(100),
-	description: Joi.string().min(10).max(500),
-}).min(1);
+	title: Joi.string().min(4).max(150),
+})
+	.min(1)
+	.unknown(false);
 
-export async function validateCreateTopic(req, res, next) {
+export async function createTopicValidator(req, res, next) {
 	try {
-		await createTopicSchema.validateAsync(req.body, {
-			allowUnknown: false,
-			abortEarly: false,
-		});
-		next();
+		await createTopicSchema.validateAsync(req.body, { abortEarly: false });
 	} catch (err) {
-		return res.status(400).json({
-			error: err.message,
-			details: err.details.map((d) => d.message),
-		});
+		return res.status(400).render('error', { message: err.message });
 	}
+	next();
 }
 
-export async function validateUpdateTopic(req, res, next) {
+export async function updateTopicValidator(req, res, next) {
 	try {
-		await updateTopicSchema.validateAsync(req.body, {
-			allowUnknown: false,
-			abortEarly: false,
-		});
-		next();
+		await updateTopicSchema.validateAsync(req.body, { abortEarly: false });
 	} catch (err) {
-		return res.status(400).json({
-			error: err.message,
-			details: err.details.map((d) => d.message),
-		});
+		return res.status(400).render('error', { message: err.message });
 	}
+	next();
 }
