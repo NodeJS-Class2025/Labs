@@ -21,6 +21,7 @@ postRouter.get('/:postId', idValidator(['postId']), getPost);
 postRouter.get('/topic/:topicId', idValidator(['topicId']), getPostsByTopic);
 
 postRouter.post('/', auth, createPostValidator, postPost);
+
 postRouter.patch(
 	'/:postId',
 	auth,
@@ -28,4 +29,5 @@ postRouter.patch(
 	updatePostValidator,
 	patchPost
 );
+
 postRouter.delete('/:postId', auth, idValidator(['postId']), deletePost);

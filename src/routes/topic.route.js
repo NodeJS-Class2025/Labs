@@ -6,7 +6,7 @@ import {
 	patchTopic,
 	deleteTopic,
 } from '../controllers/topic.controller.js';
-import { auth } from '../middleware/auth.js';
+import { auth, authAdmin } from '../middleware/auth.js';
 import {
 	createTopicValidator,
 	updateTopicValidator,
@@ -18,14 +18,19 @@ export const topicRouter = Router();
 topicRouter.get('/', getTopics);
 topicRouter.get('/:topicId', idValidator(['topicId']), getTopic);
 
-topicRouter.post('/', auth, createTopicValidator, postTopic);
+topicRouter.post('/', authAdmin, createTopicValidator, postTopic);
 
 topicRouter.patch(
 	'/:topicId',
-	auth,
+	authAdmin,
 	idValidator(['topicId']),
 	updateTopicValidator,
 	patchTopic
 );
 
-topicRouter.delete('/:topicId', auth, idValidator(['topicId']), deleteTopic);
+topicRouter.delete(
+	'/:topicId',
+	authAdmin,
+	idValidator(['topicId']),
+	deleteTopic
+);
