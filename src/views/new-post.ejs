@@ -7,7 +7,7 @@
 <body>
   <h1>Написати допис до теми: <%= topicTitle %></h1>
 
-  <form method="POST" action="/topics/<%= topicId %>/posts">
+  <form method="POST" action="/posts/topic/<%= topicId %>">
     <label for="title">Заголовок допису:</label><br>
     <input type="text" id="title" name="title" required><br><br>
 

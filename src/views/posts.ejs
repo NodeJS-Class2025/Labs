@@ -20,7 +20,7 @@
     </ul>
   <% } %>
 
-  <form method="POST" action="/topics/<%= topicId %>/posts">
+  <form method="POST" action="/posts/topic/<%= topicId %>">
     <textarea name="content" required></textarea><br>
     <button type="submit">Додати допис</button>
   </form>
