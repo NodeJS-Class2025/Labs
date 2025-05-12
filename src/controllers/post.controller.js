@@ -32,6 +32,12 @@ export const postPost = (req, res, next) => {
 	}
 };
 
+export const renderNewPost = (req, res) => {
+	const topicId = parseInt(req.params.topicId);
+	res.render('new-post', { topicId, topicTitle: 'Назва теми' });
+};
+
+
 export const patchPost = (req, res, next) => {
 	const dto = new UpdatePostDto(req.body);
 	try {

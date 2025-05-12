@@ -2,7 +2,7 @@ import { Router } from 'express';
 import {
 	getPosts,
 	getPost,
-	getPostsByTopic,
+	  getPostsByTopic,
 	postPost,
 	patchPost,
 	deletePost,
@@ -20,7 +20,8 @@ postRouter.get('/', getPosts);
 postRouter.get('/:postId', idValidator(['postId']), getPost);
 postRouter.get('/topic/:topicId', idValidator(['topicId']), getPostsByTopic);
 
-postRouter.post('/', auth, createPostValidator, postPost);
+postRouter.post('/topic/:topicId', postPost);
+
 
 postRouter.patch(
 	'/:postId',
