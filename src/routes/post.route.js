@@ -20,8 +20,7 @@ postRouter.get('/', getPosts);
 postRouter.get('/:postId', idValidator(['postId']), getPost);
 postRouter.get('/topic/:topicId', idValidator(['topicId']), getPostsByTopic);
 
-postRouter.post('/topic/:topicId', postPost);
-
+postRouter.post('/topic/:topicId', auth, idValidator(['topicId']), postPost);
 
 postRouter.patch(
 	'/:postId',

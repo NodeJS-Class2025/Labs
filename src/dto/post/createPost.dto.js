@@ -1,6 +1,6 @@
 export class CreatePostDto {
-	constructor({ topicId, description }) {
-		this.topicId = Number(topicId);
-		this.description = description;
-	}
+  constructor({ description }, topicId) {
+    this.topicId = Number(topicId);
+    this.description = description;
+  }
 }

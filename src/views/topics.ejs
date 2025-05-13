@@ -16,13 +16,14 @@
       <% topics.forEach(topic => { %>
         <li>
           <a href="/topics/<%= topic.id %>"><%= topic.title %></a><br>
-          Автор: <%= topic.author %><br>
-          Дата створення: <%= topic.createdAt %>
+          Автор: #<%= topic.userId %><br>
+          Дата створення: <%= `${topic.createdAt.split('T')[0]} ${topic.createdAt.split('T')[1].split('.')[0]}` %>
         </li>
       <% }) %>
     </ul>
   <% } %>
 
-  <a href="/topics/new" class="btn btn-primary">Створити нову тему</a>
+  <a href="/topics/create-topic" class="btn btn-primary">Створити нову тему</a>
+
 </body>
 </html>
