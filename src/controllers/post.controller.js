@@ -32,10 +32,22 @@ export const postPost = (req, res, next) => {
 	}
 };
 
-export const renderNewPost = (req, res) => {
-	const topicId = parseInt(req.params.topicId);
-	res.render('new-post', { topicId, topicTitle: 'Назва теми' });
+
+export const renderNewPost = async (req, res) => {
+  const topicId = parseInt(req.params.topicId);
+  res.render('new-post', { topicId, topicTitle: 'Нова тема' });
 };
+
+
+export const renderNewPostForm = async (req, res, next) => {
+  try {
+    const topicId = parseInt(req.params.topicId);
+    res.render('new-post', { topicId });
+  } catch (err) {
+    next(err);
+  }
+};
+
 
 
 export const patchPost = (req, res, next) => {

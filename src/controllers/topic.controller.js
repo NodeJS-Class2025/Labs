@@ -25,8 +25,7 @@ export const renderNewTopic = (req, res) => {
 };
 
 export async function getTopicsForTemplate() {
-  const topics = await Topic.find().populate('author'); // важливо populate
-  return topics;
+  return topicService.getAllTopics();
 }
 
 // Обробляє POST-запит і перенаправляє
@@ -73,3 +72,4 @@ export const deleteTopic = (req, res, next) => {
 		next(err);
 	}
 };
+

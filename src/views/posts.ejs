@@ -22,10 +22,8 @@
     </ul>
   <% } %>
 
-  <form method="POST" action="/posts/topic/<%= topicId %>">
-    <textarea name="content" required></textarea><br>
-    <button type="submit">Додати допис</button>
-  </form>
+   <a href="/posts/topic/<%= topicId %>/new" class="btn btn-primary">Додати новий допис</a>
+
 
   <a href="/topics">← Назад до тем</a>
 </body>

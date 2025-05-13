@@ -1,5 +1,4 @@
 
-// Виправлений router.js, щоб уникнути помилки `Route.post() requires a callback function but got a [object Undefined]`
 import { Router } from 'express';
 import { authRouter } from './auth.route.js';
 import { userRouter } from './user.route.js';
@@ -14,24 +13,21 @@ router.get('/', (req, res) => {
   return res.render('index');
 });
 
-// Виправлено: зміна назв функцій у router.js згідно з topic.controller.js
 router.get('/topics/new', topicController.renderNewTopic);
-router.post('/topics', topicController.postTopic); // <-- ця функція називалась createTopic, але в topic.controller.js її назва postTopic
+router.post('/topics', topicController.postTopic);
 router.get('/topics', async (req, res) => {
   const topics = await topicController.getTopicsForTemplate();
   res.render('topics', { topics });
 });
-router.get('/topics/:topicId', topicController.getTopic); // <-- було renderTopicWithPosts
+router.get('/topics/:topicId', topicController.getTopic);
 
-// Новий маршрут для шаблону постів (/posts), щоб рендерити через EJS
 router.get('/posts', async (req, res) => {
   const posts = await postController.getPostsForTemplate?.() || [];
   res.render('posts', { topicTitle: 'Всі дописи', posts, topicId: null });
 });
 
-// Виправлено: зміна назв функцій у router.js згідно з post.controller.js
-router.get('/posts/topic/:topicId/new', postController.renderNewPost); // але цієї функції НЕМає в post.controller.js, потрібно додати
-router.post('/posts/topic/:topicId', postController.postPost); // <-- було createPost, а має бути postPost
+router.get('/posts/topic/:topicId/new', postController.renderNewPost);
+router.post('/posts/topic/:topicId', postController.postPost);
 
 router.use('/auth', authRouter);
 router.use('/users', userRouter);
