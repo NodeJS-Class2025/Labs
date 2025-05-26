@@ -1,64 +1,44 @@
-import User from '../models/User.model.js';
-import {
-	createUser,
-	getUserByEmail as getUserByEmailRepo,
-	getUserById,
-	updateUser,
-	deleteUser as deleteUserRepo,
-} from '../repositories/user.repository.js';
+import userRepository from '../repositories/user.repository.js';
 import { getHashedPassword } from '../utils/getHashedPassword.js';
 
-export function verifyUser(user, password) {
-	if (!user) {
-		return false;
+class UserService {
+	constructor() {
+		this.userRepo = null;
 	}
-	return user.password === getHashedPassword(password);
-}
 
-export function getUserByEmail(email) {
-	const user = getUserByEmailRepo(email);
-	if (!user) {
-		return null;
-	}
-	return new User(user);
-}
-
-export function getUser(id) {
-	const user = getUserById(id);
-	if (!user) {
-		return null;
-	}
-	return new User(user);
-}
-
-export function postUser(user) {
-	user.password = getHashedPassword(user.password);
-	try {
-		const createdUser = new User(createUser(user));
-		return createdUser;
-	} catch (err) {
-		throw err;
-	}
-}
-
-export function patchUser(id, updates) {
-	const resUpdates = Object.fromEntries(
-		Object.entries(updates).filter(([_, value]) => value !== undefined)
-	);
-	if (updates?.password) {
-		resUpdates.password = getHashedPassword(updates.password);
-	}
-	try {
-		const user = updateUser(id, resUpdates);
+	verifyUser(user, password) {
 		if (!user) {
-			return null;
+			return false;
 		}
-		return new User(user);
-	} catch (err) {
-		throw err;
+		return user.password === getHashedPassword(password);
+	}
+
+	getUserByEmail(email) {
+		return userRepository.getUserByEmail(email);
+	}
+
+	getUser(id) {
+		return userRepository.getUserById(id);
+	}
+
+	postUser(user) {
+		user.password = getHashedPassword(user.password);
+		return userRepository.createUser(user);
+	}
+
+	patchUser(id, updates) {
+		const resUpdates = Object.fromEntries(
+			Object.entries(updates).filter(([_, value]) => value !== undefined)
+		);
+		if (updates?.password) {
+			resUpdates.password = getHashedPassword(updates.password);
+		}
+		return userRepository.updateUser(id, resUpdates);
+	}
+
+	deleteUser(id) {
+		return userRepository.deleteUser(id);
 	}
 }
 
-export function deleteUser(id) {
-	return deleteUserRepo(id);
-}
+export default new UserService();

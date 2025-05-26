@@ -52,10 +52,11 @@ export async function registerValidator(req, res, next) {
 			abortEarly: false,
 		});
 	} catch (err) {
-		return res.status(400).json({
-			error: err.message,
-			details: err.details.map((d) => d.message),
-		});
+		return res.status(400).render('register', { error: err.message });
+		// return res.status(400).json({
+		//   error: err.message,
+		//   details: err.details.map((d) => d.message),
+		// });
 	}
 	next();
 }
@@ -67,10 +68,11 @@ export async function loginValidator(req, res, next) {
 			abortEarly: false,
 		});
 	} catch (err) {
-		return res.status(400).json({
-			error: err.message,
-			details: err.details.map((d) => d.message),
-		});
+		return res.status(400).render('login', { error: err.message });
+		// return res.status(400).json({
+		//   error: err.message,
+		//   details: err.details.map((d) => d.message),
+		// });
 	}
 	next();
 }
@@ -82,10 +84,13 @@ export async function patchProfileValidator(req, res, next) {
 			abortEarly: false,
 		});
 	} catch (err) {
-		return res.status(400).json({
-			error: err.message,
-			details: err.details.map((d) => d.message),
-		});
+		return res
+			.status(400)
+			.render('editProfile', { user: req.body, error: err.message });
+		// return res.status(400).json({
+		//   error: err.message,
+		//   details: err.details.map((d) => d.message),
+		// });
 	}
 	next();
 }
