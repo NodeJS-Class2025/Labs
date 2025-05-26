@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="uk">
+	<head>
+		<meta charset="UTF-8" />
+		<title>Теми форуму</title>
+	</head>
+	<body>
+		<h1>Теми форуму</h1>
+
+		<% if (topics.length === 0) { %>
+		<p>Тем поки немає.</p>
+		<% } else { %>
+		<ul>
+			<% topics.forEach(topic => { %>
+			<li>
+				<a href="/topics/<%= topic.id %>"><%= topic.title %></a><br />
+				Автор: <%= topic.author %><br />
+				Дата створення: <%= topic.createdAt %>
+			</li>
+			<% }) %>
+		</ul>
+		<% } %>
+
+		<a href="/topics/new">Створити нову тему</a>
+	</body>
+</html>

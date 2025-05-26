@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="uk">
+	<head>
+		<meta charset="UTF-8" />
+		<title>Новий допис</title>
+	</head>
+	<body>
+		<h1>Написати допис до теми: <%= topicTitle %></h1>
+
+		<form method="POST" action="/posts/topic/<%= topicId %>">
+			<label for="title">Заголовок допису:</label><br />
+			<input type="text" id="title" name="title" required /><br /><br />
+
+			<label for="content">Ваш допис:</label><br />
+			<textarea id="content" name="content" required></textarea
+			><br /><br />
+
+			<button type="submit">Додати</button>
+		</form>
+
+		<a href="/topics/<%= topicId %>">← Назад до теми</a>
+	</body>
+</html>

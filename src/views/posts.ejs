@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="uk">
+	<head>
+		<meta charset="UTF-8" />
+		<title><%= topicTitle %></title>
+	</head>
+	<body>
+		<h1>Тема: <%= topicTitle %></h1>
+
+		<% if (posts.length === 0) { %>
+		<p>Ще немає дописів.</p>
+		<% } else { %>
+		<ul>
+			<% posts.forEach(post => { %>
+			<li>
+				<p><%= post.content %></p>
+				<small
+					>Автор: <%= post.author %>, дата: <%= post.createdAt
+					%></small
+				>
+			</li>
+			<% }) %>
+		</ul>
+		<% } %>
+
+		<form method="POST" action="/posts/topic/<%= topicId %>">
+			<textarea name="content" required></textarea><br />
+			<button type="submit">Додати допис</button>
+		</form>
+
+		<a href="/topics">← Назад до тем</a>
+	</body>
+</html>

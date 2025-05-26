@@ -6,67 +6,70 @@ import formatMessage from './format.js';
 import getErrorInfo from './getErrorInfo.js';
 import { ENV_LOCAL } from '../../constants/env.js';
 
-const __dirname = fileURLToPath(import.meta.url);
-const __filename = path.dirname(__dirname);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-const rootDir = path.resolve(__dirname, '..', '..', '..', '..');
+const rootDir = path.resolve(__dirname, '..', '..', '..');
 
 class Logger {
-  constructor(logPath = path.join(rootDir, 'logs', 'app.log')) {
-    this.logPath = logPath;
+	constructor(logPath = path.join(rootDir, 'logs', 'app.log')) {
+		this.logPath = logPath;
 
-    if (!fs.existsSync(path.dirname(this.logPath))) {
-      fs.mkdirSync(path.dirname(this.logPath), { recursive: true });
-    }
-  }
+		if (!fs.existsSync(path.dirname(this.logPath))) {
+			fs.mkdirSync(path.dirname(this.logPath), { recursive: true });
+		}
+	}
 
-  __writeMsg(msg) {
-    if (process.env.APP_ENV === ENV_LOCAL) {
-      console.log(msg);
-    } else {
-      fs.appendFile(this.logPath, `${msg}\n`, (err) => {
-        if (err) {
-          console.error('Error while try to put data into file', err.message);
-        }
-      });
-    }
-  }
+	__writeMsg(msg) {
+		if (process.env.APP_ENV === ENV_LOCAL) {
+			console.log(msg);
+		} else {
+			fs.appendFile(this.logPath, `${msg}\n`, (err) => {
+				if (err) {
+					console.error(
+						'Error while try to put data into file',
+						err.message
+					);
+				}
+			});
+		}
+	}
 
-  __log(level, msg) {
-    const formattedMsg = formatMessage(level, msg);
+	__log(level, msg) {
+		const formattedMsg = formatMessage(level, msg);
 
-    this.__writeMsg(formattedMsg);
-  }
+		this.__writeMsg(formattedMsg);
+	}
 
-  info(msg) {
-    this.__log(levels.INFO, msg);
-  }
+	info(msg) {
+		this.__log(levels.INFO, msg);
+	}
 
-  warning(msg) {
-    this.__log(levels.WARNING, msg);
-  }
+	warning(msg) {
+		this.__log(levels.WARNING, msg);
+	}
 
-  error({ msg, err }) {
-    let message;
+	error({ msg, err }) {
+		let message;
 
-    if (err instanceof Error && typeof msg === 'string') {
-      message = `${err.name}, ${err.message}, ${msg}`;
-      const addErrInfo = getErrorInfo(err);
-      if (addErrInfo) {
-        message += `, ${addErrInfo}`;
-      }
-    } else if (err instanceof Error) {
-      message = `${err.name}, ${err.message}`;
-      const addErrInfo = getErrorInfo(err);
-      if (addErrInfo) {
-        message += `, ${addErrInfo}`;
-      }
-    } else {
-      message = String(msg);
-    }
+		if (err instanceof Error && typeof msg === 'string') {
+			message = `${err.name}, ${err.message}, ${msg}`;
+			const addErrInfo = getErrorInfo(err);
+			if (addErrInfo) {
+				message += `, ${addErrInfo}`;
+			}
+		} else if (err instanceof Error) {
+			message = `${err.name}, ${err.message}`;
+			const addErrInfo = getErrorInfo(err);
+			if (addErrInfo) {
+				message += `, ${addErrInfo}`;
+			}
+		} else {
+			message = String(msg);
+		}
 
-    this.__log(levels.ERROR, message);
-  }
+		this.__log(levels.ERROR, message);
+	}
 }
 
 export default Logger;

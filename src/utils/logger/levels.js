@@ -1,7 +1,7 @@
 const levels = {
-  INFO: 'info',
-  WARNING: 'warning',
-  ERROR: 'error',
+	INFO: 'info',
+	WARNING: 'warning',
+	ERROR: 'error',
 };
 
 export default levels;
