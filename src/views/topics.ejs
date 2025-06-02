@@ -20,8 +20,8 @@
 			<li>
 				<a href="/topics/<%= topic.id %>"><%= topic.title %></a><br />
 				Автор: #<%= topic.userId %><br />
-				Дата створення: <%= `${topic.createdAt.split('T')[0]}
-				${topic.createdAt.split('T')[1].split('.')[0]}` %>
+				Дата створення: <%= `${topic.createdAt.toISOString().split('T')[0]}
+				${topic.createdAt.toISOString().split('T')[1].split('.')[0]}` %>
 			</li>
 			<% }) %>
 		</ul>

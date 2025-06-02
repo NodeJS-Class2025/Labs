@@ -96,7 +96,7 @@ class UserRepository {
     const client = await db.connect();
     try {
       await client.query('BEGIN');
-      updates.updatedAt = new Date().toISOString();
+      updates.updatedAt = new Date();
 
       const setString = Object.keys(updates)
         .map((key, i) => `"${key}"=$${i + 1}`)
