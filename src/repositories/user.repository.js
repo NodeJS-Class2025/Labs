@@ -126,8 +126,18 @@ class UserRepository {
 
   async deleteUser(id) {
     // CASCADE deletion
-    const res = await db.query('DELETE FROM users WHERE id=$1', [id]);
-    return res.rowCount;
+    const client = await db.connect();
+    try {
+      await client.query('BEGIN');
+      const res = await client.query('DELETE FROM users WHERE id=$1', [id]);
+      await client.query('COMMIT');
+      return res.rowCount;
+    } catch (err) {
+      await client.query('ROLLBACK');
+      throw err;
+    } finally {
+      client.release();
+    }
   }
 }
 

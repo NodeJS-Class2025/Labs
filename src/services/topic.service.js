@@ -10,7 +10,7 @@ class TopicService {
   async getTopic(id) {
     const topic = await topicRepository.getById(id);
     if (!topic) throw new NotFoundError('Topic not found');
-    return topicRepository.getById(id);
+    return topic;
   }
 
   async createTopic(userId, dto) {
@@ -19,7 +19,7 @@ class TopicService {
 
   async updateTopic(currentUser, topicId, dto) {
     const user = await userRepository.getUserById(currentUser.userId);
-    if (!user) throw NotFoundError('User not found');
+    if (!user) throw new NotFoundError('User not found');
 
     const topicBeforeUpdate = await topicRepository.getById(topicId);
     if (!topicBeforeUpdate) throw new NotFoundError('Topic not found');
@@ -32,10 +32,10 @@ class TopicService {
   }
 
   async deleteTopic(currentUser, topicId) {
-		const user = await userRepository.getUserById(currentUser.userId);
-    if (!user) throw NotFoundError('User not found');
+    const user = await userRepository.getUserById(currentUser.userId);
+    if (!user) throw new NotFoundError('User not found');
 
-		const topicBeforeDel = await topicRepository.getById(topicId);
+    const topicBeforeDel = await topicRepository.getById(topicId);
     if (!topicBeforeDel) throw new NotFoundError('Topic not found');
     if (topicBeforeDel.userId !== currentUser.userId)
       throw new ForbiddenError('Topic is not yours');

@@ -60,7 +60,7 @@ export const patchTopic = async (req, res, next) => {
 
 export const deleteTopic = async (req, res, next) => {
   try {
-    const result = await topicService.deleteTopic(req.user, parseInt(req.params.topicId));
+    await topicService.deleteTopic(req.user, parseInt(req.params.topicId));
     return res.sendStatus(204);
   } catch (err) {
     if (err instanceof HttpError) {

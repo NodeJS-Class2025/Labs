@@ -1,16 +1,16 @@
 import { Router } from 'express';
 import {
-	getPosts,
-	getPost,
-	getPostsByTopic,
-	postPost,
-	patchPost,
-	deletePost,
+  getPosts,
+  getPost,
+  getPostsByTopic,
+  postPost,
+  patchPost,
+  deletePost,
 } from '../controllers/post.controller.js';
 import { auth } from '../middleware/auth.js';
 import {
-	createPostValidator,
-	updatePostValidator,
+  createPostValidator,
+  updatePostValidator,
 } from '../middleware/validators/post.validator.js';
 import { idValidator } from '../middleware/validators/paramsId.validator.js';
 
@@ -22,12 +22,6 @@ postRouter.get('/topic/:topicId', idValidator(['topicId']), getPostsByTopic);
 
 postRouter.post('/topic/:topicId', auth, idValidator(['topicId']), postPost);
 
-postRouter.patch(
-	'/:postId',
-	auth,
-	idValidator(['postId']),
-	updatePostValidator,
-	patchPost
-);
+postRouter.patch('/:postId', auth, idValidator(['postId']), updatePostValidator, patchPost);
 
 postRouter.delete('/:postId', auth, idValidator(['postId']), deletePost);

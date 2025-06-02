@@ -21,8 +21,8 @@
 				<p><%= post.description %></p>
 				<small
 					>Автор: #<%= post.userId %>, дата: <%=
-					`${post.createdAt.split('T')[0]}
-					${post.createdAt.split('T')[1].split('.')[0]}` %></small
+					`${post.createdAt.toISOString().split('T')[0]}
+					${post.createdAt.toISOString().split('T')[1].split('.')[0]}` %></small
 				>
 			</li>
 			<% }) %>
