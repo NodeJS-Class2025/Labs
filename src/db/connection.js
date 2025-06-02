@@ -1,8 +1,10 @@
-import { Pool } from 'pg';
+import pg, { Pool } from 'pg';
 import dbConfig from '../config/db.js';
 import Logger from '../utils/logger/logger.js';
 
 const logger = new Logger();
+
+pg.types.setTypeParser(1082, val => val)
 
 const db = new Pool({
   ...dbConfig,
