@@ -1,46 +1,12 @@
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import db from '../db/connection.js';
-import { readJsonFileAsync } from '../utils/files/readJsonFile.js';
-import { writeJsonFileAsync } from '../utils/files/writeJsonFile.js';
 import { USER_ROLES } from '../constants/userRoles.js';
-import Logger from '../utils/logger/logger.js';
 import User from '../models/User.model.js';
-import { ConflictError, NotFoundError } from '../utils/httpErrors.js';
+import { ConflictError } from '../utils/httpErrors.js';
 import DB_ERRORS, { checkDBError } from '../constants/dbErrors.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const logger = new Logger();
-
-const users = [];
-const pathToFile = path.resolve(__dirname, '..', 'mock', 'users.mock.json');
 
 class UserRepository {
   constructor() {
     this.UserModel = User;
-  }
-
-  async readUsers() {
-    try {
-      const rawData = await readJsonFileAsync(pathToFile);
-
-      rawData.forEach((user) => {
-        // users.push(new this.UserModel(user));
-        users.push(user);
-      });
-    } catch (err) {
-      logger.error({ err });
-    }
-  }
-
-  async writeUsers() {
-    try {
-      await writeJsonFileAsync(pathToFile, users);
-    } catch (err) {
-      throw err;
-    }
   }
 
   async getUserById(id) {

@@ -1,37 +1,11 @@
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import db from '../db/connection.js';
-import { readJsonFileAsync } from '../utils/files/readJsonFile.js';
-import { writeJsonFileAsync } from '../utils/files/writeJsonFile.js';
-import Logger from '../utils/logger/logger.js';
 import Topic from '../models/Topic.model.js';
 import DB_ERRORS, { checkDBError } from '../constants/dbErrors.js';
-import { ConflictError, NotFoundError } from '../utils/httpErrors.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const logger = new Logger();
-
-const topics = [];
-const pathToFile = path.resolve(__dirname, '..', 'mock', 'topics.mock.json');
+import { ConflictError } from '../utils/httpErrors.js';
 
 class TopicRepository {
   constructor() {
     this.TopicModel = Topic;
-  }
-
-  async readTopics() {
-    try {
-      const raw = await readJsonFileAsync(pathToFile);
-      raw.forEach((t) => topics.push(t));
-    } catch (err) {
-      logger.error({ err });
-    }
-  }
-
-  async writeTopics() {
-    await writeJsonFileAsync(pathToFile, topics);
   }
 
   async getAll() {

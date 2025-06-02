@@ -3,19 +3,13 @@ import { fileURLToPath } from 'node:url';
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import db from './db/connection.js';
-import { initMockData } from './mock/index.js';
 import router from './routes/router.js';
 import Logger from './utils/logger/logger.js';
-import { readData, writeData } from './repositories/index.js';
-import sleep from './utils/sleep.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const logger = new Logger();
-
-await initMockData();
-await readData();
 
 const app = express();
 
@@ -47,9 +41,7 @@ const server = app.listen(process.env.APP_PORT || 3000, () => {
 process.on('SIGINT', async () => {
   logger.info('SIGINT');
   await db.end();
-  await writeData();
   server.close(async () => {
-    await sleep(300);
     process.exit(0);
   });
 });
@@ -57,9 +49,7 @@ process.on('SIGINT', async () => {
 process.on('SIGTERM', async () => {
   logger.info('SIGTERM');
   await db.end();
-  await writeData();
   server.close(async () => {
-    await sleep(300);
     process.exit(0);
   });
 });

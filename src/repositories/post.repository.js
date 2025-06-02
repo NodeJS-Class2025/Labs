@@ -1,37 +1,11 @@
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { readJsonFileAsync } from '../utils/files/readJsonFile.js';
-import { writeJsonFileAsync } from '../utils/files/writeJsonFile.js';
-import Logger from '../utils/logger/logger.js';
-import Post from '../models/Post.model.js';
 import db from '../db/connection.js';
+import Post from '../models/Post.model.js';
 import { ConflictError } from '../utils/httpErrors.js';
 import DB_ERRORS, { checkDBError } from '../constants/dbErrors.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const logger = new Logger();
-
-const posts = [];
-const pathToFile = path.resolve(__dirname, '..', 'mock', 'posts.mock.json');
 
 class PostRepository {
   constructor() {
     this.PostModel = Post;
-  }
-
-  async readPosts() {
-    try {
-      const raw = await readJsonFileAsync(pathToFile);
-      raw.forEach((p) => posts.push(p));
-    } catch (err) {
-      logger.error({ err });
-    }
-  }
-
-  async writePosts() {
-    await writeJsonFileAsync(pathToFile, posts);
   }
 
   async getAll() {
