@@ -5,6 +5,8 @@ import cookieParser from 'cookie-parser';
 import db from './db/connection.js';
 import router from './routes/router.js';
 import Logger from './utils/logger/logger.js';
+import sequelize from './db/orm.js';
+import './models/associations.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -30,8 +32,12 @@ app.use((req, res, next) => {
 
 app.use((err, req, res, next) => {
   logger.error({ err });
+  // ONLY FOR TEST ROLLBACK
+  if (err.message === 'Prohibited content') {
+    return res.status(400).json({ message: err.message });
+  }
+  //
   return res.status(500).render('error', { message: 'Internal server error' });
-  // res.status(500).json({ message: 'Internal server error' });
 });
 
 const server = app.listen(process.env.APP_PORT || 3000, () => {

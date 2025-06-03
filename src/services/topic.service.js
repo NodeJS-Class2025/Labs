@@ -1,6 +1,8 @@
 import topicRepository from '../repositories/topic.repository.js';
 import userRepository from '../repositories/user.repository.js';
 import { ForbiddenError, NotFoundError } from '../utils/httpErrors.js';
+import sequelize from '../db/orm.js';
+import { TopicORM, PostORM } from '../models/associations.js';
 
 class TopicService {
   async getAllTopics() {
@@ -43,6 +45,20 @@ class TopicService {
     const rowsCount = await topicRepository.deleteTopic(topicId);
     if (!rowsCount) throw new NotFoundError('Topic not found');
   }
+
+  // ONLY FOR TESTING ROLLBACK
+  async createTopicWithFirstPost(userId, { title, description }) {
+    return await sequelize.transaction(async (t) => {
+      if (['spam', 'scam'].some((w) => description.includes(w)))
+        throw new Error('Prohibited content');
+
+      const topic = await TopicORM.create({ userId, title }, { transaction: t });
+      await PostORM.create({ userId, topicId: topic.id, description }, { transaction: t });
+
+      return topic;
+    });
+  }
+  //
 }
 
 export default new TopicService();
