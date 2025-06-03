@@ -1,78 +1,79 @@
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { readJsonFileAsync } from '../utils/files/readJsonFile.js';
-import { writeJsonFileAsync } from '../utils/files/writeJsonFile.js';
-import Logger from '../utils/logger/logger.js';
+import db from '../db/connection.js';
 import Topic from '../models/Topic.model.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const logger = new Logger();
-
-const topics = [];
-const pathToFile = path.resolve(__dirname, '..', 'mock', 'topics.mock.json');
+import DB_ERRORS, { checkDBError } from '../constants/dbErrors.js';
+import { ConflictError } from '../utils/httpErrors.js';
 
 class TopicRepository {
-	constructor() {
-		this.TopicModel = Topic;
-	}
+  constructor() {
+    this.TopicModel = Topic;
+  }
 
-	async readTopics() {
-		try {
-			const raw = await readJsonFileAsync(pathToFile);
-			raw.forEach((t) => topics.push(t));
-		} catch (err) {
-			logger.error({ err });
-		}
-	}
+  async getAll() {
+    const res = await db.query('SELECT * FROM topics');
+    return res.rows.map((row) => new this.TopicModel(row));
+  }
 
-	async writeTopics() {
-		await writeJsonFileAsync(pathToFile, topics);
-	}
+  async getById(id) {
+    const res = await db.query('SELECT * FROM topics WHERE id=$1', [id]);
+    return res.rows[0] ? new this.TopicModel(res.rows[0]) : null;
+  }
 
-	_findById(id) {
-		return topics.find((t) => t.id === id);
-	}
+  async createTopic(userId, { title }) {
+    const client = await db.connect();
+    try {
+      await client.query('BEGIN');
+      const queryText = `INSERT INTO topics("userId", title) 
+				VALUES($1, $2) 
+				RETURNING *`;
+      const res = await client.query(queryText, [userId, title]);
 
-	getAll() {
-		return topics.map((t) => new this.TopicModel(t));
-	}
+      await client.query('COMMIT');
+      return new this.TopicModel(res.rows[0]);
+    } catch (err) {
+      await client.query('ROLLBACK');
+      if (checkDBError(err, DB_ERRORS.FOREIGN_KEY_CONSTRAINT))
+        throw new ConflictError("User doesn't exist");
+      throw err;
+    } finally {
+      client.release();
+    }
+  }
 
-	getById(id) {
-		const topic = this._findById(id);
-		return topic ? new this.TopicModel(topic) : null;
-	}
+  async updateTopic(id, { title }) {
+    const client = await db.connect();
+    try {
+      await client.query('BEGIN');
 
-	createTopic(userId, { title }) {
-		const now = new Date().toISOString();
-		const topic = {
-			id: topics.length + 1,
-			userId,
-			title,
-			createdAt: now,
-			updatedAt: now,
-		};
-		topics.push(topic);
-		return new this.TopicModel(topic);
-	}
+      const updates = { title, updatedAt: new Date() };
+      const res = await client.query(
+        'UPDATE topics SET title=$1, "updatedAt"=$2 WHERE id=$3 RETURNING *',
+        [...Object.values(updates), id],
+      );
+      await client.query('COMMIT');
+      return res.rows[0] ? new this.TopicModel(res.rows[0]) : null;
+    } catch (err) {
+      await client.query('ROLLBACK');
+      throw err;
+    } finally {
+      client.release();
+    }
+  }
 
-	updateTopic(id, { title }) {
-		const topic = this._findById(id);
-		if (!topic) return null;
-
-		if (title !== undefined) topic.title = title;
-		topic.updatedAt = new Date().toISOString();
-
-		return new this.TopicModel(topic);
-	}
-
-	deleteTopic(id) {
-		const idx = topics.findIndex((t) => t.id === id);
-		if (idx === -1) return false;
-		topics.splice(idx, 1);
-		return true;
-	}
+  async deleteTopic(id) {
+    // CASCADE deletion
+    const client = await db.connect();
+    try {
+      await client.query('BEGIN');
+      const res = await client.query('DELETE FROM topics WHERE id=$1', [id]);
+      await client.query('COMMIT');
+      return res.rowCount;
+    } catch (err) {
+      await client.query('ROLLBACK');
+      throw err;
+    } finally {
+      client.release();
+    }
+  }
 }
 
 export default new TopicRepository();

@@ -1,4 +1,4 @@
-Team 4 — Forum
+# Team 4 — Forum
 
 This project is a simple forum system that allows users to interact through topics and posts.
 The core entities are Topic and Post.

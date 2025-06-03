@@ -1,44 +1,50 @@
 import userRepository from '../repositories/user.repository.js';
 import { getHashedPassword } from '../utils/getHashedPassword.js';
+import { NotFoundError, UnauthorizedError } from '../utils/httpErrors.js';
 
 class UserService {
-	constructor() {
-		this.userRepo = null;
-	}
+  constructor() {
+    this.userRepo = null;
+  }
 
-	verifyUser(user, password) {
-		if (!user) {
-			return false;
-		}
-		return user.password === getHashedPassword(password);
-	}
+  verifyUser(user, password) {
+    if (!user || user.password !== getHashedPassword(password))
+      throw new UnauthorizedError('Invalid email or password');
+  }
 
-	getUserByEmail(email) {
-		return userRepository.getUserByEmail(email);
-	}
+  async getUserByEmail(email) {
+    const user = await userRepository.getUserByEmail(email);
+    if (!user) throw new NotFoundError('User not found');
+    return user;
+  }
 
-	getUser(id) {
-		return userRepository.getUserById(id);
-	}
+  async getUser(id) {
+    const user = await userRepository.getUserById(id);
+    if (!user) throw new NotFoundError('User not found');
+    return user;
+  }
 
-	postUser(user) {
-		user.password = getHashedPassword(user.password);
-		return userRepository.createUser(user);
-	}
+  async postUser(user) {
+    user.password = getHashedPassword(user.password);
+    return await userRepository.createUser(user);
+  }
 
-	patchUser(id, updates) {
-		const resUpdates = Object.fromEntries(
-			Object.entries(updates).filter(([_, value]) => value !== undefined)
-		);
-		if (updates?.password) {
-			resUpdates.password = getHashedPassword(updates.password);
-		}
-		return userRepository.updateUser(id, resUpdates);
-	}
+  async patchUser(id, updates) {
+    const resUpdates = Object.fromEntries(
+      Object.entries(updates).filter(([_, value]) => value !== undefined),
+    );
+    if (updates?.password) {
+      resUpdates.password = getHashedPassword(updates.password);
+    }
+    const user = await userRepository.updateUser(id, resUpdates);
+    if (!user) throw new NotFoundError('User not found');
+    return user;
+  }
 
-	deleteUser(id) {
-		return userRepository.deleteUser(id);
-	}
+  async deleteUser(id) {
+    const rowsCount = await userRepository.deleteUser(id);
+    if (!rowsCount) throw new NotFoundError('User not found');
+  }
 }
 
 export default new UserService();

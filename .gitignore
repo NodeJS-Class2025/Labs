@@ -2,3 +2,4 @@ node_modules
 logs
 .env
 src/mock/*.json
+test.js
