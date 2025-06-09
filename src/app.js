@@ -31,12 +31,10 @@ app.use((req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
-  logger.error({ err });
-  // ONLY FOR TEST ROLLBACK
-  if (err.message === 'Prohibited content') {
-    return res.status(400).json({ message: err.message });
+  if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+    return res.status(400).json({ message: 'Invalid body' });
   }
-  //
+  logger.error({ err });
   return res.status(500).render('error', { message: 'Internal server error' });
 });
 

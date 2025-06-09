@@ -1,6 +1,6 @@
 import Joi from 'joi';
 
-const idSchema = Joi.number().integer().positive().label('url id');
+export const idSchema = Joi.number().integer().positive().label('url id');
 
 // Example: idValidator(['itemId'])
 export const idValidator =

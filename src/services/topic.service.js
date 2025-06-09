@@ -5,8 +5,8 @@ import sequelize from '../db/orm.js';
 import { TopicORM, PostORM } from '../models/associations.js';
 
 class TopicService {
-  async getAllTopics() {
-    return await topicRepository.getAll();
+  async getAllTopics(page, category) {
+    return await topicRepository.getAll(page, category);
   }
 
   async getTopic(id) {

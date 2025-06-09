@@ -3,8 +3,8 @@ import userRepository from '../repositories/user.repository.js';
 import { NotFoundError, ForbiddenError } from '../utils/httpErrors.js';
 
 class PostService {
-  async getAllPosts() {
-    return await postRepository.getAll();
+  async getAllPosts(page) {
+    return await postRepository.getAll(page);
   }
 
   async getPost(id) {
@@ -13,8 +13,8 @@ class PostService {
     return post;
   }
 
-  async getPostsByTopic(topicId) {
-    return await postRepository.getByTopic(topicId);
+  async getPostsByTopic(topicId, page) {
+    return await postRepository.getByTopic(topicId, page);
   }
 
   async createPost(userId, dto) {

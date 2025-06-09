@@ -1,6 +1,6 @@
 import Joi from 'joi';
 
-const registerSchema = Joi.object({
+export const registerSchema = Joi.object({
 	username: Joi.string().pattern(/^\S+$/).min(4).max(30).required().messages({
 		'string.pattern.base': '{#label} must not contain spaces',
 	}),
@@ -21,14 +21,14 @@ const registerSchema = Joi.object({
 		}),
 });
 
-const loginSchema = Joi.object({
+export const loginSchema = Joi.object({
 	email: Joi.string().email().required(),
 	password: Joi.string().pattern(/^\S+$/).min(4).max(40).required().messages({
 		'string.pattern.base': '{#label} must not contain spaces',
 	}),
 });
 
-const patchProfileSchema = Joi.object({
+export const patchProfileSchema = Joi.object({
 	username: Joi.string().pattern(/^\S+$/).min(4).max(30).messages({
 		'string.pattern.base': '{#label} must not contain spaces',
 	}),

@@ -2,15 +2,20 @@ import db from '../db/connection.js';
 import Post from '../models/Post.model.js';
 import { ConflictError } from '../utils/httpErrors.js';
 import DB_ERRORS, { checkDBError } from '../constants/dbErrors.js';
+import { PostORM } from '../models/Post.orm.js';
+import PAGGINATION from '../constants/paggination.js';
 
 class PostRepository {
   constructor() {
     this.PostModel = Post;
   }
 
-  async getAll() {
-    const res = await db.query('SELECT * FROM posts');
-    return res.rows.map((row) => new this.PostModel(row));
+  async getAll(page) {
+    const posts = await PostORM.findAll({
+      limit: PAGGINATION.POSTS,
+      offset: (page - 1) * PAGGINATION.POSTS,
+    });
+    return posts;
   }
 
   async getById(id) {
@@ -18,9 +23,13 @@ class PostRepository {
     return res.rows[0] ? new this.PostModel(res.rows[0]) : null;
   }
 
-  async getByTopic(topicId) {
-    const res = await db.query('SELECT * FROM posts WHERE "topicId"=$1', [topicId]);
-    return res.rows.map((row) => new this.PostModel(row));
+  async getByTopic(topicId, page) {
+    const posts = await PostORM.findAll({
+      where: { topicId },
+      limit: PAGGINATION.POSTS,
+      offset: (page - 1) * PAGGINATION.POSTS,
+    });
+    return posts;
   }
 
   async createPost(userId, { topicId, description }) {

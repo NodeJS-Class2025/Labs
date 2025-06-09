@@ -1,11 +1,11 @@
 import Joi from 'joi';
 
-const createPostSchema = Joi.object({
+export const createPostSchema = Joi.object({
 	topicId: Joi.number().integer().positive().required(),
 	description: Joi.string().min(1).max(1000).required(),
 });
 
-const updatePostSchema = Joi.object({
+export const updatePostSchema = Joi.object({
 	description: Joi.string().min(1).max(1000),
 })
 	.min(1)
